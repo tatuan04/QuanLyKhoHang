@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/product"
+        android:title="Product"
+        android:icon="@drawable/baseline_home_24"
+        />
+    <item
+        android:id="@+id/user"
+        android:title="User"
+        android:icon="@drawable/baseline_home_24" />
+
+    <item
+        android:id="@+id/dangxuat"
+        android:title="Log out"
+        android:icon="@drawable/baseline_home_24" />
+
+</menu>
