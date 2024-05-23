@@ -42,11 +42,18 @@ android {
 dependencies {
     implementation("com.google.firebase:firebase-database:20.3.0")
     implementation("com.google.firebase:firebase-auth:22.2.0")
-    implementation ("de.hdodenhof:circleimageview:3.1.0")
-    implementation ("androidx.drawerlayout:drawerlayout:1.1.1")
-    implementation ("androidx.appcompat:appcompat:1.6.1")
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.5.3")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.5.3")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+    implementation("androidx.drawerlayout:drawerlayout:1.1.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
+    implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
+    implementation("com.ramotion.foldingcell:folding-cell:1.2.3")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("pub.devrel:easypermissions:3.0.0")
+    implementation ("com.droidninja:filepicker:2.2.5")
+
+    
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

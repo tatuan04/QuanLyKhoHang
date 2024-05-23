@@ -24,6 +24,12 @@ class SignInActivity : AppCompatActivity() {
             finish()
         }
 
+        binding.btnCancelSI.setOnClickListener {
+            val intent = Intent(this, WelcomeActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         binding.btnSignIn.setOnClickListener {
             SignIn()
         }

@@ -16,6 +16,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // improt để dùng thư viện
+        jcenter()
+        maven ( "https://jitpack.io")
     }
 }
 

@@ -4,6 +4,10 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
+    <style name="CustomTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/cyan</item>
+        <item name="toolbarStyle">@style/ToolbarTheme</item>
+    </style>
 
     <style name="Theme.QuanLyKhoHang" parent="Base.Theme.QuanLyKhoHang" />
 </resources>
