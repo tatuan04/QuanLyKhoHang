@@ -31,12 +31,15 @@ class ReceiptFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_receipt, container, false)
         binding = FragmentReceiptBinding.bind(view)
 
-        loadData()
         setIcon()
+        loadData()
         feachData()
 
         binding.fabAddReceipt.setOnClickListener {
-            (requireActivity() as TransferFragment).transferFragment(AddReceiptFragment(), "AddReceiptFragment")
+            (requireActivity() as TransferFragment).transferFragment(
+                AddReceiptFragment(),
+                "AddReceiptFragment"
+            )
         }
         return view
     }
@@ -56,23 +59,24 @@ class ReceiptFragment : Fragment() {
     private fun feachData() {
         val database = FirebaseDatabase.getInstance()
         val myRef = database.getReference("Bills")
-        myRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                listBill.clear()
-                for (snapshot: DataSnapshot in snapshot.children) {
-                    val bill = snapshot.getValue(Bill::class.java)
-                    if (bill != null) {
-                        listBill.add(bill)
-                        Log.d("tuan", "onDataChange: $bill")
+        myRef.orderByChild("status").equalTo("0")
+            .addValueEventListener(object : ValueEventListener {
+                @SuppressLint("NotifyDataSetChanged")
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    listBill.clear()
+                    for (postSnapshot in dataSnapshot.children) {
+                        val bill = postSnapshot.getValue(Bill::class.java)
+                        if (bill != null) {
+                            listBill.add(bill)
+                        }
                     }
+                    adapter.notifyDataSetChanged()
+                    Log.d("TAG", listBill.toString())
                 }
-                adapter.notifyDataSetChanged()
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-
-                Log.w("tuan", "Failed to read value.", error.toException())
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    Log.w("TAG", "loadPost:onCancelled", error.toException())
+                }
+            })
     }
 }

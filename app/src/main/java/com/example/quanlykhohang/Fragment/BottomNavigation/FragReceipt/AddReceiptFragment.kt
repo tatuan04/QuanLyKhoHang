@@ -6,87 +6,91 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.quanlykhohang.Interface.MenuControl
 import com.example.quanlykhohang.R
 import com.example.quanlykhohang.databinding.FragmentAddReceiptBinding
-// Các câu lệnh import cần thiết cho việc sử dụng các lớp và giao diện từ Android framework và các gói của dự án
 
 class AddReceiptFragment : Fragment() {
-    // Khai báo lớp AddReceiptFragment kế thừa từ Fragment
 
     private lateinit var binding: FragmentAddReceiptBinding
-    // Khai báo biến binding sẽ được khởi tạo muộn, sử dụng để ràng buộc view
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Ghi đè phương thức onCreateView để tạo giao diện người dùng cho fragment
-
-        val view = inflater.inflate(R.layout.fragment_add_receipt, container, false)
         // Inflate layout fragment_add_receipt để tạo đối tượng View từ tài nguyên XML
-
-        binding = FragmentAddReceiptBinding.bind(view)
+        val view = inflater.inflate(R.layout.fragment_add_receipt, container, false)
         // Khởi tạo binding bằng cách ràng buộc view đã được inflate
+        binding = FragmentAddReceiptBinding.bind(view)
 
-        setHasOptionsMenu(true)
         // Thông báo rằng fragment này có một menu tùy chọn
-
-        val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+        setHasOptionsMenu(true)
         // Lấy ActionBar từ activity đang chứa
-
-        requireNotNull(actionBar) { "Action bar is null" }
+        val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
         // Đảm bảo rằng ActionBar không null
-
-        actionBar.setDisplayHomeAsUpEnabled(true)
+        requireNotNull(actionBar) { "Action bar is null" }
         // Bật nút home như một nút "up"
-
-        actionBar.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
+        actionBar.setDisplayHomeAsUpEnabled(true)
         // Đặt biểu tượng của nút home thành biểu tượng mũi tên quay lại tùy chỉnh
+        actionBar.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
 
-        return view
-        // Trả về view đã được inflate và ràng buộc để hiển thị bởi fragment
-    }
+        val index = intArrayOf(0)
+        binding.seekBar2.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                index[0] = i
+                binding.btnAdd.text = if (index[0] > 1) "Tiếp" else "Tạo"
+            }
 
-    @Deprecated("Deprecated in Java")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Ghi đè phương thức onOptionsItemSelected để xử lý các lựa chọn mục menu
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Không làm gì khi bắt đầu theo dõi chạm seekbar
+            }
 
-        val id = item.itemId
-        // Lấy ID của mục menu được chọn
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Không làm gì khi kết thúc theo dõi chạm seekbar
+            }
+        })
 
-        if (id == android.R.id.home) {
-            // Nếu mục được chọn là nút home (ID android.R.id.home)
+        binding.btnAdd.setOnClickListener {
 
-            requireActivity().supportFragmentManager.popBackStack()
-            // Pop back stack của fragment để trở về fragment trước đó
-
-            closeMenu()
-            // Gọi phương thức closeMenu để đóng menu
-
-            val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
-            // Lấy lại ActionBar từ activity đang chứa
-
-            requireNotNull(actionBar) { "Action bar is null" }
-            // Đảm bảo rằng ActionBar không null
-
-            actionBar.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
-            // Đặt lại biểu tượng của nút home thành biểu tượng menu
-
-            return true
-            // Trả về true để xác nhận rằng sự kiện đã được xử lý
         }
 
-        return super.onOptionsItemSelected(item)
-        // Nếu mục được chọn không phải là nút home, chuyển sự kiện cho thực thi của lớp cha
+
+        // Trả về view đã được inflate và ràng buộc để hiển thị bởi fragment
+        return view
+
     }
 
-    private fun closeMenu() {
-        // Phương thức trợ giúp để đóng menu
+    // Ghi đè phương thức onOptionsItemSelected để xử lý các lựa chọn mục menu
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Lấy ID của mục menu được chọn
+        val id = item.itemId
+        // Nếu mục được chọn là nút home (ID android.R.id.home)
+        if (id == android.R.id.home) {
+            // Pop back stack của fragment để trở về fragment trước đó
+            requireActivity().supportFragmentManager.popBackStack()
+            // Gọi phương thức closeMenu để đóng menu
+            closeMenu()
+            // Lấy lại ActionBar từ activity đang chứa
+            val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+            // Đảm bảo rằng ActionBar không null
+            requireNotNull(actionBar) { "Action bar is null" }
+            // Đặt lại biểu tượng của nút home thành biểu tượng menu
+            actionBar.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
+            // Trả về true để xác nhận rằng sự kiện đã được xử lý
+            return true
+        }
+        // Nếu mục được chọn không phải là nút home, chuyển sự kiện cho thực thi của lớp cha
+        return super.onOptionsItemSelected(item)
 
-        (requireActivity() as MenuControl).closeMenu()
+    }
+
+    // Phương thức trợ giúp để đóng menu
+    private fun closeMenu() {
         // Ép kiểu activity thành MenuControl và gọi phương thức closeMenu của nó
+        (requireActivity() as MenuControl).closeMenu()
     }
 }

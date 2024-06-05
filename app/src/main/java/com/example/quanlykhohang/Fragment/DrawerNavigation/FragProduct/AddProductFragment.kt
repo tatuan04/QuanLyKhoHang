@@ -6,10 +6,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.quanlykhohang.Interface.MenuControl
 import com.example.quanlykhohang.Interface.Notification
 import com.example.quanlykhohang.Model.Product
 import com.example.quanlykhohang.Model.User
@@ -48,10 +51,25 @@ class AddProductFragment : Fragment(), EasyPermissions.PermissionCallbacks, Noti
         // Khởi tạo tham chiếu Firebase Storage
         storageReference = FirebaseStorage.getInstance().reference
 
-        // Thiết lập sự kiện click cho nút hủy
-        binding.btnHuySP.setOnClickListener {
-            parentFragmentManager.popBackStack()  // Quay lại Fragment trước đó
-        }
+//        // Thiết lập sự kiện click cho nút hủy
+//        binding.btnHuySP.setOnClickListener {
+//            parentFragmentManager.popBackStack()  // Quay lại Fragment trước đó
+//        }
+
+        setHasOptionsMenu(true)
+        // Thông báo rằng fragment này có một menu tùy chọn
+
+        val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+        // Lấy ActionBar từ activity đang chứa
+
+        requireNotNull(actionBar) { "Action bar is null" }
+        // Đảm bảo rằng ActionBar không null
+
+        actionBar.setDisplayHomeAsUpEnabled(true)
+        // Bật nút home như một nút "up"
+
+        actionBar.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
+        // Đặt biểu tượng của nút home thành biểu tượng mũi tên quay lại tùy chỉnh
 
         // Thiết lập sự kiện click cho nút chọn hình ảnh
         binding.imgHinhSP.setOnClickListener {
@@ -93,8 +111,14 @@ class AddProductFragment : Fragment(), EasyPermissions.PermissionCallbacks, Noti
     private fun imagePicker() {
         FilePickerBuilder.instance
             .setActivityTitle("Chọn ảnh")  // Đặt tiêu đề cho trình chọn hình ảnh
-            .setSpan(FilePickerConst.SPAN_TYPE.FOLDER_SPAN, 3)  // Đặt khoảng cách cho chế độ xem thư mục
-            .setSpan(FilePickerConst.SPAN_TYPE.DETAIL_SPAN, 4)  // Đặt khoảng cách cho chế độ xem chi tiết
+            .setSpan(
+                FilePickerConst.SPAN_TYPE.FOLDER_SPAN,
+                3
+            )  // Đặt khoảng cách cho chế độ xem thư mục
+            .setSpan(
+                FilePickerConst.SPAN_TYPE.DETAIL_SPAN,
+                4
+            )  // Đặt khoảng cách cho chế độ xem chi tiết
             .setMaxCount(1)  // Đặt số lượng hình ảnh tối đa có thể chọn
             .setSelectedFiles(listUri)  // Truyền URI đã chọn
             .setActivityTheme(R.style.CustomTheme)  // Đặt chủ đề cho trình chọn hình ảnh
@@ -154,7 +178,8 @@ class AddProductFragment : Fragment(), EasyPermissions.PermissionCallbacks, Noti
     // Tải lên hình ảnh đến Firebase Storage
     private fun uploadImage(userID: String) {
         if (listUri.isNotEmpty()) {
-            val filePath = storageReference.child("product_images").child("${System.currentTimeMillis()}.jpg")
+            val filePath =
+                storageReference.child("product_images").child("${System.currentTimeMillis()}.jpg")
             filePath.putFile(listUri[0])
                 .addOnSuccessListener { taskSnapshot ->
                     filePath.downloadUrl.addOnSuccessListener { uri ->
@@ -249,5 +274,45 @@ class AddProductFragment : Fragment(), EasyPermissions.PermissionCallbacks, Noti
     // Hiển thị thông báo lỗi
     override fun notificationError(messageError: String) {
         Toast.makeText(requireContext(), messageError, Toast.LENGTH_SHORT).show()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Ghi đè phương thức onOptionsItemSelected để xử lý các lựa chọn mục menu
+
+        val id = item.itemId
+        // Lấy ID của mục menu được chọn
+
+        if (id == android.R.id.home) {
+            // Nếu mục được chọn là nút home (ID android.R.id.home)
+
+            requireActivity().supportFragmentManager.popBackStack()
+            // Pop back stack của fragment để trở về fragment trước đó
+
+            closeMenu()
+            // Gọi phương thức closeMenu để đóng menu
+
+            val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+            // Lấy lại ActionBar từ activity đang chứa
+
+            requireNotNull(actionBar) { "Action bar is null" }
+            // Đảm bảo rằng ActionBar không null
+
+            actionBar.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
+            // Đặt lại biểu tượng của nút home thành biểu tượng menu
+
+            return true
+            // Trả về true để xác nhận rằng sự kiện đã được xử lý
+        }
+
+        return super.onOptionsItemSelected(item)
+        // Nếu mục được chọn không phải là nút home, chuyển sự kiện cho thực thi của lớp cha
+    }
+
+    private fun closeMenu() {
+        // Phương thức trợ giúp để đóng menu
+
+        (requireActivity() as MenuControl).closeMenu()
+        // Ép kiểu activity thành MenuControl và gọi phương thức closeMenu của nó
     }
 }

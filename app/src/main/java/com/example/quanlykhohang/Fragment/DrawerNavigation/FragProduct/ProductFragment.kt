@@ -1,5 +1,6 @@
 package com.example.quanlykhohang.Fragment.DrawerNavigation.FragProduct
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.quanlykhohang.Adapter.ProductAdapter
+import com.example.quanlykhohang.Adapter.Product.ProductAdapter
 import com.example.quanlykhohang.Interface.TransferFragment
 import com.example.quanlykhohang.Model.Product
 import com.example.quanlykhohang.R
@@ -60,6 +61,7 @@ class ProductFragment : Fragment() {
         val myRef = database.getReference("Products")
 
         myRef.addValueEventListener(object : ValueEventListener {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onDataChange(snapshot: DataSnapshot) {
                 // Xóa danh sách sản phẩm cũ và cập nhật với dữ liệu mới từ Firebase
                 listProduct.clear()
@@ -79,10 +81,6 @@ class ProductFragment : Fragment() {
                 Log.w("tuan", "Failed to read value.", error.toException())
             }
         })
-    }
-
-    fun isExpanded(): Boolean {
-        return isExpanded()
     }
 
 }

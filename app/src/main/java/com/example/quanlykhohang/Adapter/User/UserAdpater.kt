@@ -1,4 +1,4 @@
-package com.example.quanlykhohang.Adapter
+package com.example.quanlykhohang.Adapter.User
 
 import android.content.Context
 import android.net.Uri

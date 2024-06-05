@@ -1,13 +1,13 @@
 package com.example.quanlykhohang.Model
 
 data class Bill(
-    var id: Int = 0, //mã hóa đơn
+    val id: Int = 0, //mã hóa đơn
 
-    var status: String? = null,// >0, nhập kho, <0 xuất kho
+    val status: String? = null,// >0, nhập kho, <0 xuất kho
 
-    var createdByUser: String? = null, // id người tạo hóa đơn
+    val createdByUser: String? = null, // id người tạo hóa đơn
 
-    var createdDate: String? = null, // ngày tạo hóa đơn
+    val createdDate: String="", // ngày tạo hóa đơn
 
-    var note: String? = null
+    val note: String? = null
 )

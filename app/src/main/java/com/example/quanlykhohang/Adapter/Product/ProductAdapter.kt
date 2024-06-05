@@ -1,4 +1,4 @@
-package com.example.quanlykhohang.Adapter
+package com.example.quanlykhohang.Adapter.Product
 
 import android.content.ContentValues.TAG
 import android.content.Context

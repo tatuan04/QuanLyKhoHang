@@ -36,26 +36,11 @@
         android:hint="Số lượng"
         android:inputType="text" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+
+    <Button
+        android:id="@+id/btnThemSP"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btnHuySP"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginRight="20dp"
-            android:text="Hủy" />
-
-        <Button
-            android:id="@+id/btnThemSP"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Thêm" />
-    </LinearLayout>
-
+        android:layout_gravity="center"
+        android:text="Thêm" />
 </LinearLayout>

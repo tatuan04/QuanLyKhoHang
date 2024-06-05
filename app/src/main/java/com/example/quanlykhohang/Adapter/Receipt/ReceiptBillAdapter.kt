@@ -1,10 +1,13 @@
 package com.example.quanlykhohang.Adapter.Receipt
 
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.quanlykhohang.Fragment.BottomNavigation.FragReceipt.ReceiptDetailFragment
 import com.example.quanlykhohang.Model.Bill
 import com.example.quanlykhohang.R
 import com.example.quanlykhohang.databinding.ItemReceiptBinding
@@ -36,6 +39,16 @@ class ReceiptBillAdapter(private val listBill: ArrayList<Bill>, private var cont
         binding.txtNgay.text = "${bill.createdDate}"
 
         binding.btnchitiet.setOnClickListener {
+            val activity = it.context as AppCompatActivity
+            val fragment = ReceiptDetailFragment()
+            val bundle = Bundle()
+            bundle.putInt("id", bill.id)
+            fragment.arguments = bundle
+            activity.supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fame, fragment)
+                .addToBackStack(ReceiptDetailFragment::class.java.name)
+                .commit()
 
         }
 

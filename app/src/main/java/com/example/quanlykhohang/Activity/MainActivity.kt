@@ -20,17 +20,23 @@ import com.example.quanlykhohang.Fragment.DrawerNavigation.FragUser.UserFragment
 import com.example.quanlykhohang.Interface.FragmentInteractionListener
 import com.example.quanlykhohang.Interface.MenuControl
 import com.example.quanlykhohang.Interface.TransferFragment
+import com.example.quanlykhohang.Model.User
 import com.example.quanlykhohang.R
 import com.example.quanlykhohang.databinding.ActivityMainBinding
+import com.google.android.material.navigation.NavigationView
+import com.google.android.play.integrity.internal.m
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class MainActivity : AppCompatActivity(), TransferFragment, MenuControl, FragmentInteractionListener {
+class MainActivity : AppCompatActivity(), TransferFragment, MenuControl,
+    FragmentInteractionListener {
     // Khai báo biến binding để liên kết với layout ActivityMainBinding
     private lateinit var binding: ActivityMainBinding
+    private var listUser: ArrayList<User>? = null
+    private lateinit var navigation: NavigationView
 
     // onCreate được gọi khi Activity được tạo ra
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +45,8 @@ class MainActivity : AppCompatActivity(), TransferFragment, MenuControl, Fragmen
         // Inflate layout và gán biến binding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        listUser = ArrayList()
+        navigation = binding.nav
         // Lấy ra các thành phần trong header của Navigation Drawer
         val header = binding.nav.getHeaderView(0)
         val txtTen = header.findViewById<TextView>(R.id.txtNamess)
@@ -59,7 +66,8 @@ class MainActivity : AppCompatActivity(), TransferFragment, MenuControl, Fragmen
                         // Duyệt qua các userSnapshot để lấy thông tin người dùng
                         for (userSnapshot in snapshot.children) {
                             val email = userSnapshot.child("email").getValue(String::class.java)
-                            val userType = userSnapshot.child("userType").getValue(String::class.java)
+                            val userType =
+                                userSnapshot.child("userType").getValue(String::class.java)
                             val avatar = userSnapshot.child("avatar").getValue(String::class.java)
 
                             // Hiển thị thông tin người dùng trên header của Navigation Drawer
@@ -69,6 +77,16 @@ class MainActivity : AppCompatActivity(), TransferFragment, MenuControl, Fragmen
                                 Glide.with(this@MainActivity)
                                     .load(avatar)
                                     .into(imgAvatar)
+                            }
+                            // Phân quyền
+                            if (userType.equals("User")) {
+                                val nav = navigation.menu
+                                nav.findItem(R.id.user)?.setVisible(false)
+                                Log.e("MainActivity", "User")
+                            } else {
+                                val nav = navigation.menu
+                                nav.findItem(R.id.user)?.setVisible(true)
+                                Log.e("MainActivity", "Admin")
                             }
                         }
                     } else {
@@ -86,6 +104,7 @@ class MainActivity : AppCompatActivity(), TransferFragment, MenuControl, Fragmen
                     Log.e("MainActivity", "DatabaseError: ${error.message}")
                 }
             })
+
 
         // Thiết lập toolbar là action bar của activity
         setSupportActionBar(binding.toolbar)

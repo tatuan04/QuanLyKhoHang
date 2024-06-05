@@ -7,11 +7,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.finishAffinity
 import com.example.quanlykhohang.Activity.MainActivity
+import com.example.quanlykhohang.Interface.MenuControl
 import com.example.quanlykhohang.Interface.Notification
 import com.example.quanlykhohang.Model.Product
 import com.example.quanlykhohang.Model.User
@@ -46,12 +49,23 @@ class AddUserFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         storageReference = FirebaseStorage.getInstance().reference
 
+        setHasOptionsMenu(true)
+        // Thông báo rằng fragment này có một menu tùy chọn
+
+        val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+        // Lấy ActionBar từ activity đang chứa
+
+        requireNotNull(actionBar) { "Action bar is null" }
+        // Đảm bảo rằng ActionBar không null
+
+        actionBar.setDisplayHomeAsUpEnabled(true)
+        // Bật nút home như một nút "up"
+
+        actionBar.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
+        // Đặt biểu tượng của nút home thành biểu tượng mũi tên quay lại tùy chỉnh
+
         binding.imgAvatar.setOnClickListener {
             grantPermissions()
-        }
-
-        binding.btnCancel.setOnClickListener {
-            parentFragmentManager.popBackStack()
         }
 
         getUser()
@@ -284,6 +298,7 @@ class AddUserFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -305,6 +320,46 @@ class AddUserFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         } else {
             Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Ghi đè phương thức onOptionsItemSelected để xử lý các lựa chọn mục menu
+
+        val id = item.itemId
+        // Lấy ID của mục menu được chọn
+
+        if (id == android.R.id.home) {
+            // Nếu mục được chọn là nút home (ID android.R.id.home)
+
+            requireActivity().supportFragmentManager.popBackStack()
+            // Pop back stack của fragment để trở về fragment trước đó
+
+            closeMenu()
+            // Gọi phương thức closeMenu để đóng menu
+
+            val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+            // Lấy lại ActionBar từ activity đang chứa
+
+            requireNotNull(actionBar) { "Action bar is null" }
+            // Đảm bảo rằng ActionBar không null
+
+            actionBar.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
+            // Đặt lại biểu tượng của nút home thành biểu tượng menu
+
+            return true
+            // Trả về true để xác nhận rằng sự kiện đã được xử lý
+        }
+
+        return super.onOptionsItemSelected(item)
+        // Nếu mục được chọn không phải là nút home, chuyển sự kiện cho thực thi của lớp cha
+    }
+
+    private fun closeMenu() {
+        // Phương thức trợ giúp để đóng menu
+
+        (requireActivity() as MenuControl).closeMenu()
+        // Ép kiểu activity thành MenuControl và gọi phương thức closeMenu của nó
     }
 }
 
