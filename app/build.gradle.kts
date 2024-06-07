@@ -51,8 +51,10 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("pub.devrel:easypermissions:3.0.0")
     implementation ("com.droidninja:filepicker:2.2.5")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
-    
+
+
 
 
     implementation(libs.androidx.core.ktx)

@@ -1,5 +1,6 @@
 package com.example.quanlykhohang.Fragment.BottomNavigation.FragReceipt
 
+import AddReceiptFragment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
@@ -71,7 +72,6 @@ class ReceiptFragment : Fragment() {
                         }
                     }
                     adapter.notifyDataSetChanged()
-                    Log.d("TAG", listBill.toString())
                 }
 
                 override fun onCancelled(error: DatabaseError) {

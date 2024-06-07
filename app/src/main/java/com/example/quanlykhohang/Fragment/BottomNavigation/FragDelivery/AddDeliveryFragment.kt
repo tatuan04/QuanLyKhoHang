@@ -1,65 +1,98 @@
+package com.example.quanlykhohang.Fragment.BottomNavigation.FragDelivery
+
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.SeekBar
 import android.widget.SimpleAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import com.example.quanlykhohang.Interface.MenuControl
 import com.example.quanlykhohang.Model.Bill
 import com.example.quanlykhohang.Model.BillDetail
 import com.example.quanlykhohang.Model.Product
 import com.example.quanlykhohang.R
-import com.example.quanlykhohang.databinding.FragmentAddReceiptBinding
+import com.example.quanlykhohang.databinding.FragmentAddDeliveryBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.ArrayList
+import java.util.Date
+import java.util.Locale
 
-class AddReceiptFragment : Fragment() {
-
-    // Khai báo các biến và danh sách dữ liệu cần thiết
-    private lateinit var binding: FragmentAddReceiptBinding
+class AddDeliveryFragment : Fragment() {
+    // Khai báo biến
+    private lateinit var binding: FragmentAddDeliveryBinding
     private val listProduct = ArrayList<Product>()
     private val listBill = ArrayList<Bill>()
     private val listBillDetail = ArrayList<BillDetail>()
     private var idBill = 0
     private var idUser: String? = null
 
+    // Khởi tạo Fragment và các thành phần giao diện
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Gắn giao diện cho Fragment
-        binding = FragmentAddReceiptBinding.inflate(inflater, container, false)
+        val view = inflater.inflate(R.layout.fragment_add_delivery, container, false)
+        binding = FragmentAddDeliveryBinding.bind(view)
 
-        // Khởi tạo giao diện và thiết lập ActionBar
+        // Khởi tạo các view và thiết lập ActionBar
         initViews()
         setupActionBar()
-
-        // Lấy dữ liệu từ Firebase
         fetchData()
 
-        // Xử lý sự kiện khi người dùng nhấn vào nút Thêm
+        // Xử lý sự kiện khi nhấn nút Thêm
         binding.btnAdd.setOnClickListener { handleAddButtonClick() }
 
-        return binding.root
+        // Xử lý sự kiện khi chọn sản phẩm trong Spinner
+        binding.spnTenSP.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                // Lấy số lượng sản phẩm còn lại và hiển thị lên giao diện
+                val HMMSP = binding.spnTenSP.selectedItem as HashMap<String, Any>?
+                val itt = HMMSP?.get("soLuong") as? Int
+                binding.txtSoLuongConLai.text = itt?.toString() ?: ""
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Xử lý khi không có mục nào được chọn
+            }
+        }
+        return view
     }
 
-    // Khởi tạo các thành phần của giao diện
+    // Khởi tạo các thành phần giao diện
     private fun initViews() {
         binding.seekBar2.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                // Cập nhật nội dung nút Thêm dựa trên giá trị của SeekBar
                 binding.btnAdd.text = if (progress > 1) "Tiếp" else "Tạo"
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Không cần thực hiện hành động khi chạm vào SeekBar
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Không cần thực hiện hành động khi nhả SeekBar
+            }
         })
     }
 
-    // Thiết lập ActionBar với nút back
+    // Thiết lập ActionBar
     private fun setupActionBar() {
         setHasOptionsMenu(true)
         val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
@@ -77,7 +110,7 @@ class AddReceiptFragment : Fragment() {
         loadProducts()
     }
 
-    // Tải danh sách sản phẩm từ Firebase
+    // Lấy danh sách sản phẩm từ Firebase
     private fun loadProducts() {
         val database = FirebaseDatabase.getInstance().reference.child("Products")
         database.addValueEventListener(object : ValueEventListener {
@@ -126,13 +159,14 @@ class AddReceiptFragment : Fragment() {
         binding.spnTenSP.adapter = adapter
     }
 
-    // Xử lý sự kiện khi người dùng nhấn vào nút Thêm
+    // Xử lý khi nhấn nút Thêm
     private fun handleAddButtonClick() {
         val progress = binding.seekBar2.progress
         if (progress > 0) {
             insertSp()
             binding.spnTenSP.setSelection(0)
             binding.txtSoLuong.setText("")
+            binding.txtGiaXuat.setText("")
             binding.seekBar2.progress = progress - 1
             if (progress == 1) {
                 insertHoaDon()
@@ -147,19 +181,21 @@ class AddReceiptFragment : Fragment() {
         }
     }
 
-    // Thêm sản phẩm vào kho và tạo chi tiết hóa đơn
+    // Thêm sản phẩm vào hóa đơn
     private fun insertSp() {
         if (isAdded) {
             val selectedItem = binding.spnTenSP.selectedItem as? Map<String, Any> ?: return
             val maSP = selectedItem["maSP"] as? Int ?: return
             val gia = selectedItem["gia"] as? Int ?: return
+            val giaXuat = binding.txtGiaXuat.text.toString().trim()
             val soL = binding.txtSoLuong.text.toString().trim()
 
             try {
                 val soLuongSp = soL.toInt()
                 val tong = soLuongSp * (selectedItem["soLuong"] as? Int ?: return)
+                val giaXuat = giaXuat.toInt()
                 updateProductBill(tong, maSP, gia, selectedItem)
-                addBillDetail(maSP, idBill, soLuongSp, gia, selectedItem)
+                addBillDetail(maSP, idBill, soLuongSp, gia, giaXuat, selectedItem)
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
             }
@@ -168,7 +204,7 @@ class AddReceiptFragment : Fragment() {
         }
     }
 
-    // Cập nhật dữ liệu sản phẩm trong kho
+    // Cập nhật thông tin sản phẩm trong hóa đơn
     private fun updateProductBill(tong: Int, maSP: Int, gia: Int, selectedItem: Map<String, Any>) {
         try {
             val product = Product(
@@ -187,27 +223,26 @@ class AddReceiptFragment : Fragment() {
         }
     }
 
-    // Thêm chi tiết hóa đơn
+    // Thêm chi tiết hóa đơn vào cơ sở dữ liệu
     private fun addBillDetail(
         maSP: Int,
         idBill: Int,
         soLuongSp: Int,
         gia: Int,
+        giaXuat: Int,
         selectedItem: Map<String, Any>
     ) {
         try {
-            // Lấy ngày hiện tại
             val currentDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
-            // Tạo đối tượng BillDetail
             val billDetail = BillDetail(
                 maSP,
                 idBill,
                 selectedItem["nameSP"] as? String ?: "",
                 soLuongSp,
                 gia,
+                giaXuat,
                 currentDate
             )
-            // Tính kích thước danh sách chi tiết hóa đơn và thêm vào Firebase
             val size = listBillDetail.size + 1
             FirebaseDatabase.getInstance().reference.child("BillDetails").child(size.toString())
                 .setValue(billDetail)
@@ -216,16 +251,13 @@ class AddReceiptFragment : Fragment() {
         }
     }
 
-    // Thêm hóa đơn
+    // Thêm hóa đơn vào cơ sở dữ liệu
     private fun insertHoaDon() {
         try {
-            // Lấy ngày hiện tại
             val currentDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
-            // Tạo ID hóa đơn mới
             val id = if (listBill.isEmpty()) 1 else listBill.last().id + 1
-            // Tạo đối tượng Bill
-            val bill = Bill(id, "0", idUser, currentDate, "")
-            // Thêm hóa đơn vào Firebase
+
+            val bill = Bill(id, "1", idUser, currentDate, "")
             FirebaseDatabase.getInstance().reference.child("Bills").child(id.toString())
                 .setValue(bill)
         } catch (e: Exception) {
@@ -233,7 +265,7 @@ class AddReceiptFragment : Fragment() {
         }
     }
 
-    // Lấy ID của người dùng hiện tại
+    // Lấy ID người dùng hiện tại từ Firebase
     private fun getIdUser() {
         FirebaseAuth.getInstance().currentUser?.email?.let { email ->
             FirebaseDatabase.getInstance().reference.child("Users")
@@ -253,7 +285,7 @@ class AddReceiptFragment : Fragment() {
         }
     }
 
-    // Lấy ID của hóa đơn cuối cùng và thiết lập ID mới
+    // Lấy ID hóa đơn cuối cùng từ Firebase
     private fun getIdBill() {
         FirebaseDatabase.getInstance().reference.child("Bills")
             .addValueEventListener(object : ValueEventListener {
@@ -271,7 +303,7 @@ class AddReceiptFragment : Fragment() {
             })
     }
 
-    // Lấy danh sách chi tiết hóa đơn
+    // Lấy danh sách chi tiết hóa đơn từ Firebase
     private fun getIdBillDetail() {
         FirebaseDatabase.getInstance().reference.child("BillDetails")
             .addValueEventListener(object : ValueEventListener {
@@ -288,7 +320,7 @@ class AddReceiptFragment : Fragment() {
             })
     }
 
-    // Xử lý sự kiện khi nhấn nút back trên ActionBar
+    // Xử lý sự kiện khi chọn mục trong ActionBar
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == android.R.id.home) {
@@ -301,7 +333,7 @@ class AddReceiptFragment : Fragment() {
         }
     }
 
-    // Đóng menu
+    // Đóng menu nếu có
     private fun closeMenu() {
         (requireActivity() as? MenuControl)?.closeMenu()
     }

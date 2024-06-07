@@ -15,4 +15,22 @@ data class BillDetail(
 
     var createdDate: String? = null //ngày tạo hóa đơn
 
-)
+) {
+    constructor(
+        idProduct: Int,
+        idBill: Int,
+        nameProduct: String?,
+        quantity: Int?,
+        importPrice: Int?,
+        createdDate: String?
+    ) : this(
+        idProduct = idProduct,
+        idBill = idBill,
+        nameProduct = nameProduct,
+        quantity = quantity,
+        importPrice = importPrice,
+        exportPrice = 0, // default value for exportPrice
+        createdDate = createdDate
+    )
+}
+

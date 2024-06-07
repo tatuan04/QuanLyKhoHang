@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.quanlykhohang.Fragment.BottomNavigation.FragDelivery.DeliveryFragment
 import com.example.quanlykhohang.Fragment.BottomNavigation.FragReceipt.ReceiptFragment
-import com.example.quanlykhohang.Fragment.BottomNavigation.FragReport.ReportFragment
+import com.example.quanlykhohang.Fragment.BottomNavigation.FragStatistical.StatisticalFragment
 import com.example.quanlykhohang.Fragment.DrawerNavigation.FragProduct.ProductFragment
 import com.example.quanlykhohang.Fragment.DrawerNavigation.FragUser.UserFragment
 import com.example.quanlykhohang.Interface.FragmentInteractionListener
@@ -150,7 +150,7 @@ class MainActivity : AppCompatActivity(), TransferFragment, MenuControl,
         // Xử lý sự kiện khi chọn một item trong Bottom Navigation
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             val fragment: Fragment = when (item.itemId) {
-                R.id.baocao -> ReportFragment()
+                R.id.thongke -> StatisticalFragment()
                 R.id.phieunhap -> ReceiptFragment()
                 else -> DeliveryFragment()
             }

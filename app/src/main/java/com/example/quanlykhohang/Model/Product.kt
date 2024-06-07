@@ -5,12 +5,12 @@ import android.os.Parcelable
 
 data class Product(
     val id: Int = 0,
-    var name: String? = null,
-    var quantity: Int = 0,
-    var price: Int = 0,
-    var photo: String? = null,
-    val storage: String? = null,
-    val userID: String? = null
+    var name: String? = null, //tên sản phẩm
+    var quantity: Int = 0, // số lượng của sản phẩm
+    var price: Int = 0, //giá của sản phẩm
+    var photo: String? = null, // hình ảnh của sản phẩm khi vào kho
+    val storage: String? = null, //lưu trữ
+    val userID: String? = null // id của người tạo sản phẩm
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),

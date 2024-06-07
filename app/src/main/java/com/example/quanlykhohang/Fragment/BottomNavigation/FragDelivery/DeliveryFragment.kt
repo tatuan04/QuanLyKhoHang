@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quanlykhohang.Adapter.Delivery.DeliveryBillAdapter
 import com.example.quanlykhohang.Adapter.Receipt.ReceiptBillAdapter
+import com.example.quanlykhohang.Interface.TransferFragment
 import com.example.quanlykhohang.Model.Bill
 import com.example.quanlykhohang.R
 import com.example.quanlykhohang.databinding.FragmentDeliveryBinding
@@ -35,6 +36,12 @@ class DeliveryFragment : Fragment() {
         loadData()
         feachData()
 
+        binding.fabAddDelivery.setOnClickListener {
+            (requireActivity() as TransferFragment).transferFragment(
+                AddDeliveryFragment(),
+                "AddDeliveryFragment"
+            )
+        }
         return view
     }
 

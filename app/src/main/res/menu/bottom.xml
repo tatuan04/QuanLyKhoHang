@@ -2,17 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/phieunhap"
-        android:title="Phiếu nhập"
-        android:icon="@drawable/baseline_home_24"
-        />
+        android:icon="@drawable/baseline_bookmark_add_24"
+        android:title="Phiếu nhập" />
     <item
         android:id="@+id/phieuxuat"
-        android:title="Phiếu xuất"
-        android:icon="@drawable/baseline_home_24"
-        />
+        android:icon="@drawable/baseline_bookmark_remove_24"
+        android:title="Phiếu xuất" />
     <item
-        android:id="@+id/baocao"
-        android:title="Báo cáo"
-        android:icon="@drawable/baseline_home_24"
-        />
+        android:id="@+id/thongke"
+        android:icon="@drawable/baseline_content_paste_24"
+        android:title="Thống kê" />
 </menu>
