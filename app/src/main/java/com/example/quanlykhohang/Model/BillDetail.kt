@@ -3,7 +3,7 @@ package com.example.quanlykhohang.Model
 data class BillDetail(
     var idProduct: Int = 0, // id sản phẩm
 
-    var idBill: Int = 0, //id hóa đơn
+    var idBill: String = "", //id hóa đơn
 
     var nameProduct: String? = null, //tên sản phẩm
 
@@ -18,7 +18,7 @@ data class BillDetail(
 ) {
     constructor(
         idProduct: Int,
-        idBill: Int,
+        idBill: String,
         nameProduct: String?,
         quantity: Int?,
         importPrice: Int?,
@@ -33,4 +33,3 @@ data class BillDetail(
         createdDate = createdDate
     )
 }
-

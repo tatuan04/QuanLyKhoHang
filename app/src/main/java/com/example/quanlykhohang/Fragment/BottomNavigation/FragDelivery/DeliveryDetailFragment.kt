@@ -76,7 +76,7 @@ class DeliveryDetailFragment : Fragment() {
                         Log.d("tuan", "onDataChange: $bill")
                     }
                 }
-                getListBillDetail(idBill)
+                getListBillDetail(idBill.toString())
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -86,7 +86,7 @@ class DeliveryDetailFragment : Fragment() {
         })
     }
 
-    private fun getListBillDetail(idBill: Int) {
+    private fun getListBillDetail(idBill: String) {
         val database = FirebaseDatabase.getInstance()
         val myRef = database.getReference("BillDetails")
         myRef.addValueEventListener(object : ValueEventListener {
@@ -132,7 +132,6 @@ class DeliveryDetailFragment : Fragment() {
         return super.onOptionsItemSelected(item)
 
     }
-
     // Phương thức trợ giúp để đóng menu
     private fun closeMenu() {
         // Ép kiểu activity thành MenuControl và gọi phương thức closeMenu của nó

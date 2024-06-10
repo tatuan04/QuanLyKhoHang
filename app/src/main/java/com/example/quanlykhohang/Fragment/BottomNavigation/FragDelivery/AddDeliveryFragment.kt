@@ -34,7 +34,7 @@ class AddDeliveryFragment : Fragment() {
     private val listProduct = ArrayList<Product>()
     private val listBill = ArrayList<Bill>()
     private val listBillDetail = ArrayList<BillDetail>()
-    private var idBill = 0
+    private var idBill = "0"
     private var idUser: String? = null
 
     // Khởi tạo Fragment và các thành phần giao diện
@@ -226,7 +226,7 @@ class AddDeliveryFragment : Fragment() {
     // Thêm chi tiết hóa đơn vào cơ sở dữ liệu
     private fun addBillDetail(
         maSP: Int,
-        idBill: Int,
+        idBill: String,
         soLuongSp: Int,
         gia: Int,
         giaXuat: Int,
@@ -294,7 +294,7 @@ class AddDeliveryFragment : Fragment() {
 
                     listBill.clear()
                     snapshot.children.mapNotNullTo(listBill) { it.getValue(Bill::class.java) }
-                    idBill = if (listBill.isEmpty()) 1 else listBill.last().id + 1
+                    idBill = if (listBill.isEmpty()) 1.toString() else (listBill.last().id + 1).toString()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -338,4 +338,3 @@ class AddDeliveryFragment : Fragment() {
         (requireActivity() as? MenuControl)?.closeMenu()
     }
 }
-
