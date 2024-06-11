@@ -40,6 +40,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.*
+
 class DailyStatisticsFragment : Fragment() {
     private lateinit var binding: FragmentDailyStatisticsBinding
     private lateinit var database: DatabaseReference
@@ -135,9 +136,11 @@ class DailyStatisticsFragment : Fragment() {
 
         binding.edtngaybd.setOnClickListener { setupDatePickerDialog(binding.edtngaybd) }
         binding.edtngaykt.setOnClickListener { setupDatePickerDialog(binding.edtngaykt) }
-        binding.btnTatCaNgay.setOnClickListener { lifecycleScope.launch {
-            loadData()
-        } }
+        binding.btnTatCaNgay.setOnClickListener {
+            lifecycleScope.launch {
+                loadData()
+            }
+        }
 
         binding.btnkhoang.setOnClickListener {
             try {
@@ -146,13 +149,18 @@ class DailyStatisticsFragment : Fragment() {
                 if (ngaybd.isEmpty() || ngaykt.isEmpty()) {
                     binding.edtngaybd.error = "Không được để trống"
                     binding.edtngaykt.error = "Không được để trống"
-                    Toast.makeText(requireContext(), "Vui lòng nhập đầy đủ", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Vui lòng nhập đầy đủ", Toast.LENGTH_SHORT)
+                        .show()
                     return@setOnClickListener
                 }
                 if (ngaybd > ngaykt) {
                     binding.edtngaybd.error = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc"
                     binding.edtngaykt.error = "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-                    Toast.makeText(requireContext(), "Ngày bắt đầu phải nhỏ hơn ngày kết thúc", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Ngày bắt đầu phải nhỏ hơn ngày kết thúc",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
                 }
                 loadStatsBetweenDates(ngaybd, ngaykt)
@@ -167,13 +175,16 @@ class DailyStatisticsFragment : Fragment() {
                 val nam = calendar.get(Calendar.YEAR)
                 val thang = calendar.get(Calendar.MONTH)
                 val dayss = calendar.get(Calendar.DAY_OF_MONTH)
-                val datePickerDialog = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
-                    val formattedYear = year.toString()
-                    val formattedMonth = if (month < 9) "0${month + 1}" else (month + 1).toString()
-                    val formattedDay = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
-                    val dates = "$formattedDay-$formattedMonth-$formattedYear"
-                    loadStatsForDate(dates)
-                }, nam, thang, dayss)
+                val datePickerDialog =
+                    DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
+                        val formattedYear = year.toString()
+                        val formattedMonth =
+                            if (month < 9) "0${month + 1}" else (month + 1).toString()
+                        val formattedDay =
+                            if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
+                        val dates = "$formattedDay-$formattedMonth-$formattedYear"
+                        loadStatsForDate(dates)
+                    }, nam, thang, dayss)
                 datePickerDialog.show()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -229,8 +240,6 @@ class DailyStatisticsFragment : Fragment() {
     }
 
 
-
-
     suspend fun getRevenueWithinLast7Days(): List<Statistical> {
         val revenueList = mutableListOf<Statistical>()
         val database = FirebaseDatabase.getInstance()
@@ -259,7 +268,8 @@ class DailyStatisticsFragment : Fragment() {
         val productsRef = database.getReference("Products")
         val billDetailsRef = database.getReference("BillDetails")
         val billRef = database.getReference("Bills")
-        val billsSnapshot = billDetailsRef.orderByChild("createdDate").equalTo(dateStr).get().await()
+        val billsSnapshot =
+            billDetailsRef.orderByChild("createdDate").equalTo(dateStr).get().await()
 
         val billIds = mutableListOf<String>()
         for (detailData in billsSnapshot.children) {
@@ -270,12 +280,14 @@ class DailyStatisticsFragment : Fragment() {
             val billData = billRef.child(billId).get().await()
             val status = billData.child("status").getValue(String::class.java)
             if (status == "1") {
-                val detailsSnapshot = billDetailsRef.orderByChild("idBill").equalTo(billId).get().await()
+                val detailsSnapshot =
+                    billDetailsRef.orderByChild("idBill").equalTo(billId).get().await()
                 for (detailData in detailsSnapshot.children) {
                     val productId = detailData.child("idProduct").getValue(Int::class.java) ?: 0
                     val quantity = detailData.child("quantity").getValue(Int::class.java) ?: 0
                     val productData = productsRef.child(productId.toString()).get().await()
-                    val priceXuat = detailData.child("exportPrice").getValue(Double::class.java) ?: 0.0
+                    val priceXuat =
+                        detailData.child("exportPrice").getValue(Double::class.java) ?: 0.0
                     val price = productData.child("price").getValue(Double::class.java) ?: 0.0
                     dailyRevenue += (priceXuat - price) * quantity
                 }
@@ -283,8 +295,6 @@ class DailyStatisticsFragment : Fragment() {
         }
         return dailyRevenue
     }
-
-
 
 
     suspend fun getTotalRevenueWithinLast7Days(): Double {
@@ -311,7 +321,6 @@ class DailyStatisticsFragment : Fragment() {
     }
 
 
-
     fun retrieveDailyStatsWithinLast7Days(callback: (List<Statistical>) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val dailyStatsList = getDailyStatsWithinLast7Days()
@@ -329,6 +338,7 @@ class DailyStatisticsFragment : Fragment() {
             }
         }
     }
+
     fun retrieveTotalRevenueWithinLast7Days(callback: (Double) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val totalRevenue = getTotalRevenueWithinLast7Days()
@@ -338,15 +348,16 @@ class DailyStatisticsFragment : Fragment() {
         }
     }
 
-    private suspend fun loadData(){
+    private suspend fun loadData() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         val list = loadDataFromFirebase()
         if (list.isNotEmpty()) {
-            val adapter = DailyStatisticsAdapter(list as ArrayList<Statistical> ,requireContext())
+            val adapter = DailyStatisticsAdapter(list as ArrayList<Statistical>, requireContext())
             binding.recyclerView.adapter = adapter
         }
 
     }
+
     private suspend fun loadDataFromFirebase(): List<Statistical> {
         val database = FirebaseDatabase.getInstance()
         val reference = database.getReference("Bills")
@@ -369,12 +380,14 @@ class DailyStatisticsFragment : Fragment() {
 
         return revenueList
     }
+
     private fun loadStatsForDate(date: String) {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         lifecycleScope.launch {
             val list = getStatsForDate(date)
             if (list.isNotEmpty()) {
-                val adapter = DailyStatisticsAdapter(list as ArrayList<Statistical> ,requireContext())
+                val adapter =
+                    DailyStatisticsAdapter(list as ArrayList<Statistical>, requireContext())
                 binding.recyclerView.adapter = adapter
             }
         }
@@ -385,11 +398,13 @@ class DailyStatisticsFragment : Fragment() {
         lifecycleScope.launch {
             val list = getStatsBetweenDates(startDate, endDate)
             if (list.isNotEmpty()) {
-                val adapter = DailyStatisticsAdapter(list as ArrayList<Statistical>, requireContext())
+                val adapter =
+                    DailyStatisticsAdapter(list as ArrayList<Statistical>, requireContext())
                 binding.recyclerView.adapter = adapter
             }
         }
     }
+
     private fun setupDatePickerDialog(editText: EditText) {
         val calendar = Calendar.getInstance()
         val nam = calendar.get(Calendar.YEAR)
@@ -405,6 +420,7 @@ class DailyStatisticsFragment : Fragment() {
 
         datePickerDialog.show()
     }
+
     private fun getAllStats(callback: (List<Statistical>) -> Unit) {
         val database = FirebaseDatabase.getInstance()
         val reference = database.getReference("BillDetails")
@@ -425,7 +441,7 @@ class DailyStatisticsFragment : Fragment() {
     }
 
     // Lấy thông tin một thống kê dựa trên ngày
-    private suspend fun getStatsForDate(date: String) : List<Statistical> {
+    private suspend fun getStatsForDate(date: String): List<Statistical> {
         val database = FirebaseDatabase.getInstance()
         val revenueList = mutableListOf<Statistical>()
         val dailyRevenue = calculateDailyRevenue(database, date)
@@ -435,7 +451,10 @@ class DailyStatisticsFragment : Fragment() {
     }
 
     // Lấy thông tin thống kê trong khoảng thời gian
-    private suspend fun getStatsBetweenDates(startDate: String, endDate: String): List<Statistical> {
+    private suspend fun getStatsBetweenDates(
+        startDate: String,
+        endDate: String
+    ): List<Statistical> {
         val database = FirebaseDatabase.getInstance()
         val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
         val calendar = Calendar.getInstance()
@@ -474,7 +493,8 @@ class DailyStatisticsFragment : Fragment() {
 
 
             if (status == "0" || status == "1") {
-                val detailsSnapshot = billDetailsRef.orderByChild("idBill").equalTo(billId).get().await()
+                val detailsSnapshot =
+                    billDetailsRef.orderByChild("idBill").equalTo(billId).get().await()
                 for (detailData in detailsSnapshot.children) {
                     val quantity = detailData.child("quantity").getValue(Int::class.java) ?: 0
                     if (status == "0") {
